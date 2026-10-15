@@ -1,0 +1,226 @@
+{
+	"info": {
+		"_postman_id": "controller-assist-collection-v1",
+		"name": "ControllerAssist - Control de Asistencias API",
+		"description": "Colección completa de endpoints para el sistema ControllerAssist (Gestión de Empleados y Registro de Asistencias con Spring Boot y MySQL).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Empleados",
+			"item": [
+				{
+					"name": "Listar todos los empleados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees"],
+							"query": [
+								{ "key": "activeOnly", "value": "true", "disabled": true },
+								{ "key": "search", "value": "Carlos", "disabled": true }
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener empleado por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees", "1"]
+						}
+					}
+				},
+				{
+					"name": "Obtener empleado por Código",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/code/EMP-101",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees", "code", "EMP-101"]
+						}
+					}
+				},
+				{
+					"name": "Crear nuevo empleado",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"EMP-105\",\n  \"firstName\": \"Roberto\",\n  \"lastName\": \"Muñoz\",\n  \"email\": \"roberto.munoz@empresa.com\",\n  \"department\": \"Finanzas\",\n  \"position\": \"Analista Contable\",\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/employees",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar empleado",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"EMP-105\",\n  \"firstName\": \"Roberto Carlos\",\n  \"lastName\": \"Muñoz\",\n  \"email\": \"roberto.munoz@empresa.com\",\n  \"department\": \"Finanzas\",\n  \"position\": \"Jefe de Contabilidad\",\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees", "1"]
+						}
+					}
+				},
+				{
+					"name": "Desactivar empleado (Baja lógica)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Asistencias",
+			"item": [
+				{
+					"name": "Marcar Asistencia Automática (Punch)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"employeeCode\": \"EMP-101\",\n  \"notes\": \"Marcación desde lector o Postman\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances/punch",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances", "punch"]
+						}
+					}
+				},
+				{
+					"name": "Marcar Entrada Explícita",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"employeeCode\": \"EMP-103\",\n  \"notes\": \"Llegada a turno\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances/check-in",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances", "check-in"]
+						}
+					}
+				},
+				{
+					"name": "Marcar Salida Explícita",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"employeeCode\": \"EMP-103\",\n  \"notes\": \"Fin de jornada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances/check-out",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances", "check-out"]
+						}
+					}
+				},
+				{
+					"name": "Listar Asistencias de Hoy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances/today",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances", "today"]
+						}
+					}
+				},
+				{
+					"name": "Resumen Estadístico de Hoy (Dashboard)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances/summary/today",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances", "summary", "today"]
+						}
+					}
+				},
+				{
+					"name": "Consultar Asistencias con Filtros",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances"],
+							"query": [
+								{ "key": "employeeId", "value": "1", "disabled": true },
+								{ "key": "startDate", "value": "2026-10-01", "disabled": true },
+								{ "key": "endDate", "value": "2026-10-31", "disabled": true },
+								{ "key": "status", "value": "ON_TIME", "disabled": true }
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

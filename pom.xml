@@ -72,6 +72,15 @@
 
     <build>
         <plugins>
+            <!-- Maven Surefire Plugin para ejecución de tests en JDK 21+ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+                </configuration>
+            </plugin>
+
             <!-- Spring Boot Maven Plugin para empaquetar JAR ejecutable -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>

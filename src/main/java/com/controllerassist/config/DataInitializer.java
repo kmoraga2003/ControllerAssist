@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class DataInitializer implements CommandLineRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataInitializer.java);
+    private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
     private final EmployeeRepository employeeRepository;
     private final AttendanceRepository attendanceRepository;

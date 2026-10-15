@@ -1,0 +1,22 @@
+[Unit]
+Description=ControllerAssist - Servicio de Control de Asistencias Spring Boot
+After=syslog.target network.target mysql.service
+
+[Service]
+User=root
+WorkingDirectory=/opt/controller-assist
+ExecStart=/usr/bin/java -jar /opt/controller-assist/controller-assist-0.0.1-SNAPSHOT.jar
+SuccessExitStatus=143
+Restart=always
+RestartSec=10
+
+# Variables de entorno para conectar a MySQL
+Environment="DB_HOST=localhost"
+Environment="DB_PORT=3306"
+Environment="DB_NAME=controller_assist_db"
+Environment="DB_USER=root"
+Environment="DB_PASSWORD="
+Environment="PORT=8080"
+
+[Install]
+WantedBy=multi-user.target

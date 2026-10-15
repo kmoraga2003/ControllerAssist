@@ -1,0 +1,107 @@
+{
+	"info": {
+		"_postman_id": "controller-assist-collection-v1",
+		"name": "ControllerAssist - Control de Asistencias API",
+		"description": "Colección completa de endpoints para el sistema ControllerAssist (Gestión de Empleados y Registro de Asistencias con Spring Boot y MySQL).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Empleados",
+			"item": [
+				{
+					"name": "Listar todos los empleados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees"]
+						}
+					}
+				},
+				{
+					"name": "Obtener empleado por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees", "1"]
+						}
+					}
+				},
+				{
+					"name": "Crear nuevo empleado",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"EMP-105\",\n  \"firstName\": \"Roberto\",\n  \"lastName\": \"Muñoz\",\n  \"email\": \"roberto.munoz@empresa.com\",\n  \"department\": \"Finanzas\",\n  \"position\": \"Analista Contable\",\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/employees",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Asistencias",
+			"item": [
+				{
+					"name": "Marcar Asistencia Automática (Punch)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"employeeCode\": \"EMP-101\",\n  \"notes\": \"Marcación desde lector o Postman\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances/punch",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances", "punch"]
+						}
+					}
+				},
+				{
+					"name": "Listar Asistencias de Hoy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances/today",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances", "today"]
+						}
+					}
+				},
+				{
+					"name": "Resumen Estadístico de Hoy (Dashboard)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/attendances/summary/today",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "attendances", "summary", "today"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

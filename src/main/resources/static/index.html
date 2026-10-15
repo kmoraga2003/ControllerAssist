@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ControllerAssist - Control de Asistencias</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar Superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+                <i class="bi bi-clock-history fs-3 me-2"></i>
+                <span>ControllerAssist</span>
+                <span class="badge bg-light text-primary ms-2 fs-6">v1.0</span>
+            </a>
+
+            <div class="d-flex align-items-center ms-auto gap-3">
+                <!-- Reloj en Vivo -->
+                <div class="text-white text-end d-none d-sm-block">
+                    <div id="liveClock" class="fw-bold fs-5 font-monospace">--:--:--</div>
+                    <small id="liveDate" class="text-white-50">--</small>
+                </div>
+
+                <!-- Enlaces rápidos -->
+                <a href="/swagger-ui.html" target="_blank" class="btn btn-outline-light btn-sm d-flex align-items-center">
+                    <i class="bi bi-file-earmark-code me-1"></i> Swagger API
+                </a>
+                <a href="/postman/ControllerAssist.postman_collection.json" download class="btn btn-warning btn-sm d-flex align-items-center text-dark fw-semibold">
+                    <i class="bi bi-download me-1"></i> Postman
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4 py-4">
+
+        <!-- Tarjetas de Métricas del Día -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm h-100 border-start border-primary border-4">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary me-3">
+                            <i class="bi bi-people fs-2"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1 small fw-bold">Total Empleados</h6>
+                            <h3 id="statTotalEmployees" class="fw-bold mb-0">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm h-100 border-start border-success border-4">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success me-3">
+                            <i class="bi bi-check-circle fs-2"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1 small fw-bold">Presentes Hoy</h6>
+                            <h3 id="statPresentToday" class="fw-bold mb-0 text-success">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm h-100 border-start border-warning border-4">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning me-3">
+                            <i class="bi bi-alarm fs-2"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1 small fw-bold">Tardanzas Hoy</h6>
+                            <h3 id="statLateToday" class="fw-bold mb-0 text-warning">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm h-100 border-start border-danger border-4">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger me-3">
+                            <i class="bi bi-person-x fs-2"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1 small fw-bold">Ausentes Estimados</h6>
+                            <h3 id="statAbsentToday" class="fw-bold mb-0 text-danger">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestañas de Navegación -->
+        <ul class="nav nav-pills mb-4 nav-fill bg-white p-2 rounded shadow-sm" id="mainTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold" id="kiosk-tab" data-bs-toggle="pill" data-bs-target="#kiosk" type="button" role="tab">
+                    <i class="bi bi-upc-scan me-1"></i> Marcador Rápido (Kiosco)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="today-tab" data-bs-toggle="pill" data-bs-target="#today" type="button" role="tab">
+                    <i class="bi bi-calendar-check me-1"></i> Asistencias de Hoy
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="history-tab" data-bs-toggle="pill" data-bs-target="#history" type="button" role="tab">
+                    <i class="bi bi-clock-history me-1"></i> Historial y Reportes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="employees-tab" data-bs-toggle="pill" data-bs-target="#employees" type="button" role="tab">
+                    <i class="bi bi-person-lines-fill me-1"></i> Gestión de Empleados
+                </button>
+            </li>
+        </ul>
+
+        <!-- Contenido de las Pestañas -->
+        <div class="tab-content" id="mainTabContent">
+
+            <!-- TAB 1: KIOSCO DE MARCACIÓN RÁPIDA -->
+            <div class="tab-pane fade show active" id="kiosk" role="tabpanel">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="card border-0 shadow-sm text-center p-4">
+                            <div class="card-body">
+                                <div class="mb-3 text-primary">
+                                    <i class="bi bi-fingerprint display-1"></i>
+                                </div>
+                                <h3 class="card-title fw-bold">Registro de Asistencia</h3>
+                                <p class="text-muted">Ingresa tu código de empleado o selecciónalo de la lista para registrar tu Entrada o Salida.</p>
+
+                                <form id="punchForm" class="mt-4">
+                                    <div class="mb-3">
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light"><i class="bi bi-person-badge"></i></span>
+                                            <input type="text" id="punchCodeInput" class="form-control text-uppercase font-monospace" placeholder="Código (ej. EMP-101)" required autofocus autocomplete="off">
+                                        </div>
+                                    </div>
+
+                                    <!-- Selector rápido para demo -->
+                                    <div class="mb-3 text-start">
+                                        <label class="form-label small text-muted">O seleccionar de la lista:</label>
+                                        <select id="punchEmployeeSelect" class="form-select form-select-sm">
+                                            <option value="">-- Seleccionar empleado --</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <input type="text" id="punchNotesInput" class="form-control" placeholder="Notas u observaciones (opcional)">
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm">
+                                            <i class="bi bi-arrow-repeat me-1"></i> Marcar Asistencia (Automático)
+                                        </button>
+                                        <div class="row g-2">
+                                            <div class="col">
+                                                <button type="button" id="btnExplicitCheckIn" class="btn btn-outline-success w-100 fw-semibold">
+                                                    <i class="bi bi-box-arrow-in-right me-1"></i> Entrada
+                                                </button>
+                                            </div>
+                                            <div class="col">
+                                                <button type="button" id="btnExplicitCheckOut" class="btn btn-outline-danger w-100 fw-semibold">
+                                                    <i class="bi bi-box-arrow-right me-1"></i> Salida
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- Mensaje de Feedback -->
+                                <div id="punchAlert" class="alert mt-4 d-none text-start shadow-sm" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i id="punchAlertIcon" class="bi fs-3 me-3"></i>
+                                        <div>
+                                            <h5 id="punchAlertTitle" class="alert-heading mb-1 fw-bold"></h5>
+                                            <p id="punchAlertText" class="mb-0 small"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ASISTENCIAS DE HOY -->
+            <div class="tab-pane fade" id="today" role="tabpanel">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold text-secondary"><i class="bi bi-list-check me-2"></i>Registros del Día</h5>
+                        <button id="btnRefreshToday" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Empleado</th>
+                                        <th>Departamento</th>
+                                        <th>Entrada</th>
+                                        <th>Salida</th>
+                                        <th>Estado</th>
+                                        <th>Notas</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="todayAttendanceTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">Cargando registros...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: HISTORIAL Y REPORTES -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3 text-secondary"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+                        <form id="filterForm" class="row g-3">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label small fw-semibold">Fecha Inicial</label>
+                                <input type="date" id="filterStartDate" class="form-control">
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label class="form-label small fw-semibold">Fecha Final</label>
+                                <input type="date" id="filterEndDate" class="form-control">
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label class="form-label small fw-semibold">Empleado</label>
+                                <select id="filterEmployeeSelect" class="form-select">
+                                    <option value="">-- Todos los empleados --</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label class="form-label small fw-semibold">Estado</label>
+                                <select id="filterStatusSelect" class="form-select">
+                                    <option value="">-- Todos los estados --</option>
+                                    <option value="ON_TIME">A tiempo</option>
+                                    <option value="LATE">Tardanza</option>
+                                    <option value="EARLY_EXIT">Salida anticipada</option>
+                                    <option value="NORMAL">Normal</option>
+                                </select>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" id="btnResetFilters" class="btn btn-outline-secondary me-2">
+                                    <i class="bi bi-x-circle me-1"></i> Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search me-1"></i> Buscar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold text-secondary"><i class="bi bi-table me-2"></i>Resultados del Historial</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Código</th>
+                                        <th>Empleado</th>
+                                        <th>Departamento</th>
+                                        <th>Entrada</th>
+                                        <th>Salida</th>
+                                        <th>Estado</th>
+                                        <th>Observación</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4 text-muted">Usa los filtros o haz clic en Buscar para consultar el historial.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: GESTIÓN DE EMPLEADOS -->
+            <div class="tab-pane fade" id="employees" role="tabpanel">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold text-secondary"><i class="bi bi-person-badge me-2"></i>Directorio de Personal</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#employeeModal" id="btnNewEmployee">
+                            <i class="bi bi-plus-lg me-1"></i> Nuevo Empleado
+                        </button>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row g-2 mb-3">
+                            <div class="col-12 col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="employeeSearchInput" class="form-control" placeholder="Buscar por nombre, código o departamento...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Correo</th>
+                                        <th>Departamento</th>
+                                        <th>Cargo</th>
+                                        <th>Estado</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeesTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">Cargando personal...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- /tab-content -->
+
+    </div> <!-- /container -->
+
+    <!-- Modal Empleado (Crear / Editar) -->
+    <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="employeeModalLabel">Nuevo Empleado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="employeeForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="empIdInput">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Código de Empleado *</label>
+                            <input type="text" id="empCodeInput" class="form-control text-uppercase font-monospace" placeholder="Ej: EMP-105" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col">
+                                <label class="form-label fw-semibold">Nombre *</label>
+                                <input type="text" id="empFirstNameInput" class="form-control" placeholder="Ej: Juan" required>
+                            </div>
+                            <div class="col">
+                                <label class="form-label fw-semibold">Apellido *</label>
+                                <input type="text" id="empLastNameInput" class="form-control" placeholder="Ej: Pérez" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Correo Electrónico *</label>
+                            <input type="email" id="empEmailInput" class="form-control" placeholder="juan.perez@empresa.com" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col">
+                                <label class="form-label fw-semibold">Departamento</label>
+                                <input type="text" id="empDepartmentInput" class="form-control" placeholder="Ej: Operaciones">
+                            </div>
+                            <div class="col">
+                                <label class="form-label fw-semibold">Cargo / Posición</label>
+                                <input type="text" id="empPositionInput" class="form-control" placeholder="Ej: Supervisor">
+                            </div>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="empActiveInput" checked>
+                            <label class="form-check-label fw-semibold" for="empActiveInput">Empleado Activo</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary fw-bold" id="btnSaveEmployee">Guardar Empleado</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App JS -->
+    <script src="js/app.js"></script>
+</body>
+</html>
