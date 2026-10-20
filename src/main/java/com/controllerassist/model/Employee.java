@@ -30,6 +30,13 @@ public class Employee {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @Column(nullable = false, length = 100)
+    private String password = "password123";
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role = Role.EMPLEADO;
+
     @Column(length = 100)
     private String department;
 
@@ -45,11 +52,13 @@ public class Employee {
     public Employee() {
     }
 
-    public Employee(String code, String firstName, String lastName, String email, String department, String position) {
+    public Employee(String code, String firstName, String lastName, String email, String password, Role role, String department, String position) {
         this.code = code;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.password = (password != null && !password.isBlank()) ? password : "password123";
+        this.role = (role != null) ? role : Role.EMPLEADO;
         this.department = department;
         this.position = position;
         this.active = true;
@@ -100,6 +109,22 @@ public class Employee {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getDepartment() {

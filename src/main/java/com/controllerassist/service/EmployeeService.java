@@ -2,9 +2,12 @@ package com.controllerassist.service;
 
 import com.controllerassist.dto.EmployeeRequestDTO;
 import com.controllerassist.dto.EmployeeResponseDTO;
+import com.controllerassist.dto.LoginRequestDTO;
+import com.controllerassist.dto.LoginResponseDTO;
 import com.controllerassist.exception.BadRequestException;
 import com.controllerassist.exception.ResourceNotFoundException;
 import com.controllerassist.model.Employee;
+import com.controllerassist.model.Role;
 import com.controllerassist.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,19 +25,47 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
+    /**
+     * Autenticación de usuarios por correo y contraseña (CA-01)
+     */
     @Transactional(readOnly = true)
-    public List<EmployeeResponseDTO> getAllEmployees(Boolean activeOnly, String search) {
+    public LoginResponseDTO login(LoginRequestDTO dto) {
+        Employee employee = employeeRepository.findByEmail(dto.getEmail().trim().toLowerCase())
+                .orElseThrow(() -> new BadRequestException("Credenciales incorrectas: correo o contraseña no válidos"));
+
+        if (!employee.isActive()) {
+            throw new BadRequestException("El usuario se encuentra inactivo. Comunícate con el Administrador.");
+        }
+
+        if (!employee.getPassword().equals(dto.getPassword())) {
+            throw new BadRequestException("Credenciales incorrectas: correo o contraseña no válidos");
+        }
+
+        return LoginResponseDTO.fromEmployee(employee, "Autenticación exitosa");
+    }
+
+    /**
+     * Listado de empleados con filtro por estado (AP-01)
+     * Soporta: status = ACTIVO | INACTIVO | TODOS
+     */
+    @Transactional(readOnly = true)
+    public List<EmployeeResponseDTO> getEmployees(String status, String search) {
         List<Employee> list;
 
         if (search != null && !search.trim().isEmpty()) {
             list = employeeRepository.searchEmployees(search.trim());
-            if (Boolean.TRUE.equals(activeOnly)) {
-                list = list.stream().filter(Employee::isActive).collect(Collectors.toList());
-            }
-        } else if (Boolean.TRUE.equals(activeOnly)) {
-            list = employeeRepository.findByActiveTrue();
         } else {
             list = employeeRepository.findAll();
+        }
+
+        if (status != null && !status.trim().isEmpty()) {
+            String s = status.trim().toUpperCase();
+            if ("ACTIVO".equals(s) || "TRUE".equals(s)) {
+                list = list.stream().filter(Employee::isActive).collect(Collectors.toList());
+            } else if ("INACTIVO".equals(s) || "FALSE".equals(s)) {
+                list = list.stream().filter(e -> !e.isActive()).collect(Collectors.toList());
+            }
+            // "TODOS" leaves full list intact
         }
 
         return list.stream()
@@ -68,6 +99,8 @@ public class EmployeeService {
         employee.setFirstName(dto.getFirstName().trim());
         employee.setLastName(dto.getLastName().trim());
         employee.setEmail(dto.getEmail().trim().toLowerCase());
+        employee.setPassword(dto.getPassword() != null && !dto.getPassword().isBlank() ? dto.getPassword() : "123456");
+        employee.setRole(dto.getRole() != null ? dto.getRole() : Role.EMPLEADO);
         employee.setDepartment(dto.getDepartment());
         employee.setPosition(dto.getPosition());
         employee.setActive(dto.getActive() != null ? dto.getActive() : true);
@@ -90,6 +123,12 @@ public class EmployeeService {
         employee.setFirstName(dto.getFirstName().trim());
         employee.setLastName(dto.getLastName().trim());
         employee.setEmail(dto.getEmail().trim().toLowerCase());
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            employee.setPassword(dto.getPassword());
+        }
+        if (dto.getRole() != null) {
+            employee.setRole(dto.getRole());
+        }
         employee.setDepartment(dto.getDepartment());
         employee.setPosition(dto.getPosition());
         if (dto.getActive() != null) {
@@ -102,7 +141,6 @@ public class EmployeeService {
 
     public void deleteEmployee(Long id) {
         Employee employee = findByIdOrThrow(id);
-        // Desactivación lógica para no romper registros históricos de asistencia
         employee.setActive(false);
         employeeRepository.save(employee);
     }

@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "controller-assist-collection-v1",
-		"name": "ControllerAssist - Control de Asistencias API",
-		"description": "Colección completa de endpoints para el sistema ControllerAssist (Gestión de Empleados y Registro de Asistencias con Spring Boot y MySQL).",
+		"_postman_id": "controller-assist-quimica-v2",
+		"name": "ControllerAssist - Sistema de Control de Asistencias (Empresa Química)",
+		"description": "Colección completa de endpoints para evaluación de los requerimientos: CA-01, RE-01, RE-02, RE-03, GU-01, GU-02, GU-03 y AP-01.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -14,120 +14,53 @@
 	],
 	"item": [
 		{
-			"name": "Empleados",
+			"name": "1. Autenticación (CA-01)",
 			"item": [
 				{
-					"name": "Listar todos los empleados",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/employees",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "employees"],
-							"query": [
-								{ "key": "activeOnly", "value": "true", "disabled": true },
-								{ "key": "search", "value": "Carlos", "disabled": true }
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener empleado por ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/employees/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "employees", "1"]
-						}
-					}
-				},
-				{
-					"name": "Obtener empleado por Código",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/employees/code/EMP-101",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "employees", "code", "EMP-101"]
-						}
-					}
-				},
-				{
-					"name": "Crear nuevo empleado",
+					"name": "Login Administrador",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"code\": \"EMP-105\",\n  \"firstName\": \"Roberto\",\n  \"lastName\": \"Muñoz\",\n  \"email\": \"roberto.munoz@empresa.com\",\n  \"department\": \"Finanzas\",\n  \"position\": \"Analista Contable\",\n  \"active\": true\n}"
+							"raw": "{\n  \"email\": \"admin@quimica.cl\",\n  \"password\": \"admin123\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/employees",
+							"raw": "{{baseUrl}}/api/auth/login",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "employees"]
+							"path": ["api", "auth", "login"]
 						}
 					}
 				},
 				{
-					"name": "Actualizar empleado",
+					"name": "Login Empleado",
 					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"code\": \"EMP-105\",\n  \"firstName\": \"Roberto Carlos\",\n  \"lastName\": \"Muñoz\",\n  \"email\": \"roberto.munoz@empresa.com\",\n  \"department\": \"Finanzas\",\n  \"position\": \"Jefe de Contabilidad\",\n  \"active\": true\n}"
+							"raw": "{\n  \"email\": \"carlos.silva@quimica.cl\",\n  \"password\": \"123456\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/employees/1",
+							"raw": "{{baseUrl}}/api/auth/login",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "employees", "1"]
-						}
-					}
-				},
-				{
-					"name": "Desactivar empleado (Baja lógica)",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/employees/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "employees", "1"]
+							"path": ["api", "auth", "login"]
 						}
 					}
 				}
 			]
 		},
 		{
-			"name": "Asistencias",
+			"name": "2. Control de Asistencia (CA-01)",
 			"item": [
 				{
-					"name": "Marcar Asistencia Automática (Punch)",
+					"name": "Marcar Asistencia (Botón Entrada/Salida)",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"employeeCode\": \"EMP-101\",\n  \"notes\": \"Marcación desde lector o Postman\"\n}"
+							"raw": "{\n  \"employeeCode\": \"EMP-101\",\n  \"notes\": \"Marcación desde dispositivo o Postman\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/attendances/punch",
@@ -137,49 +70,19 @@
 					}
 				},
 				{
-					"name": "Marcar Entrada Explícita",
+					"name": "Consultar Asistencia de Hoy de un Empleado",
 					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"employeeCode\": \"EMP-103\",\n  \"notes\": \"Llegada a turno\"\n}"
-						},
+						"method": "GET",
+						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/attendances/check-in",
+							"raw": "{{baseUrl}}/api/attendances/my-today/2",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "attendances", "check-in"]
+							"path": ["api", "attendances", "my-today", "2"]
 						}
 					}
 				},
 				{
-					"name": "Marcar Salida Explícita",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"employeeCode\": \"EMP-103\",\n  \"notes\": \"Fin de jornada\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/attendances/check-out",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "attendances", "check-out"]
-						}
-					}
-				},
-				{
-					"name": "Listar Asistencias de Hoy",
+					"name": "Listar Asistencias de Hoy (General)",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -189,34 +92,135 @@
 							"path": ["api", "attendances", "today"]
 						}
 					}
-				},
+				}
+			]
+		},
+		{
+			"name": "3. Reportes Administrativos (RE-01, RE-02, RE-03)",
+			"item": [
 				{
-					"name": "Resumen Estadístico de Hoy (Dashboard)",
+					"name": "RE-01: Reporte de Atrasos (Post 09:30 AM)",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/attendances/summary/today",
+							"raw": "{{baseUrl}}/api/reports/late?startDate=2026-01-01&endDate=2026-12-31",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "attendances", "summary", "today"]
+							"path": ["api", "reports", "late"],
+							"query": [
+								{ "key": "startDate", "value": "2026-01-01" },
+								{ "key": "endDate", "value": "2026-12-31" }
+							]
 						}
 					}
 				},
 				{
-					"name": "Consultar Asistencias con Filtros",
+					"name": "RE-02: Reporte de Salidas Anticipadas (Antes 17:30 PM)",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/attendances",
+							"raw": "{{baseUrl}}/api/reports/early-exit?startDate=2026-01-01&endDate=2026-12-31",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "attendances"],
+							"path": ["api", "reports", "early-exit"],
 							"query": [
-								{ "key": "employeeId", "value": "1", "disabled": true },
-								{ "key": "startDate", "value": "2026-10-01", "disabled": true },
-								{ "key": "endDate", "value": "2026-10-31", "disabled": true },
-								{ "key": "status", "value": "ON_TIME", "disabled": true }
+								{ "key": "startDate", "value": "2026-01-01" },
+								{ "key": "endDate", "value": "2026-12-31" }
 							]
+						}
+					}
+				},
+				{
+					"name": "RE-03: Reporte de Inasistencias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reports/absences?date=2026-10-20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reports", "absences"],
+							"query": [
+								{ "key": "date", "value": "2026-10-20" }
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Gestión de Usuarios (GU-01, GU-02, GU-03, AP-01)",
+			"item": [
+				{
+					"name": "AP-01: Listar Empleados por Estado (ACTIVO)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees?status=ACTIVO",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees"],
+							"query": [
+								{ "key": "status", "value": "ACTIVO" }
+							]
+						}
+					}
+				},
+				{
+					"name": "AP-01: Listar Empleados por Estado (TODOS)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees?status=TODOS",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees"],
+							"query": [
+								{ "key": "status", "value": "TODOS" }
+							]
+						}
+					}
+				},
+				{
+					"name": "GU-01: Crear Usuario",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"EMP-108\",\n  \"firstName\": \"Ignacio\",\n  \"lastName\": \"Tapia\",\n  \"email\": \"ignacio.tapia@quimica.cl\",\n  \"password\": \"123456\",\n  \"role\": \"EMPLEADO\",\n  \"department\": \"Control de Calidad\",\n  \"position\": \"Analista Químico Junior\",\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/employees",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees"]
+						}
+					}
+				},
+				{
+					"name": "GU-02: Modificar Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"EMP-108\",\n  \"firstName\": \"Ignacio Andrés\",\n  \"lastName\": \"Tapia\",\n  \"email\": \"ignacio.tapia@quimica.cl\",\n  \"password\": \"nuevaClave123\",\n  \"role\": \"EMPLEADO\",\n  \"department\": \"Control de Calidad\",\n  \"position\": \"Analista Químico Senior\",\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/8",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees", "8"]
+						}
+					}
+				},
+				{
+					"name": "GU-03: Eliminar / Desactivar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/8",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "employees", "8"]
 						}
 					}
 				}

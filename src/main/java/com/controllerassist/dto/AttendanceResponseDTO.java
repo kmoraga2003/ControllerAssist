@@ -3,6 +3,7 @@ package com.controllerassist.dto;
 import com.controllerassist.model.AttendanceRecord;
 import com.controllerassist.model.AttendanceStatus;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -20,6 +21,8 @@ public class AttendanceResponseDTO {
     private String statusDescription;
     private String notes;
     private String message;
+    private String workedHoursFormatted;
+    private Long workedMinutes;
 
     public AttendanceResponseDTO() {
     }
@@ -39,6 +42,22 @@ public class AttendanceResponseDTO {
         dto.setStatus(record.getStatus());
         dto.setStatusDescription(record.getStatus() != null ? record.getStatus().getDisplayName() : "");
         dto.setNotes(record.getNotes());
+
+        // Cálculo de horas trabajadas
+        if (record.getCheckInTime() != null && record.getCheckOutTime() != null) {
+            long totalMinutes = Duration.between(record.getCheckInTime(), record.getCheckOutTime()).toMinutes();
+            long hours = totalMinutes / 60;
+            long mins = totalMinutes % 60;
+            dto.setWorkedMinutes(totalMinutes);
+            dto.setWorkedHoursFormatted(hours + "h " + mins + "m");
+        } else if (record.getCheckInTime() != null) {
+            dto.setWorkedHoursFormatted("En curso");
+            dto.setWorkedMinutes(0L);
+        } else {
+            dto.setWorkedHoursFormatted("-");
+            dto.setWorkedMinutes(0L);
+        }
+
         return dto;
     }
 
@@ -136,5 +155,21 @@ public class AttendanceResponseDTO {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getWorkedHoursFormatted() {
+        return workedHoursFormatted;
+    }
+
+    public void setWorkedHoursFormatted(String workedHoursFormatted) {
+        this.workedHoursFormatted = workedHoursFormatted;
+    }
+
+    public Long getWorkedMinutes() {
+        return workedMinutes;
+    }
+
+    public void setWorkedMinutes(Long workedMinutes) {
+        this.workedMinutes = workedMinutes;
     }
 }

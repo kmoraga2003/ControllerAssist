@@ -4,6 +4,46 @@ server:
 spring:
   application:
     name: controller-assist
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
+# Documentación Swagger / OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+
+---
+# ==============================================================
+# PERFIL 1: LOCAL (Base de datos persistente en disco sin requerir servidor MySQL activo)
+# ==============================================================
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:h2:file:./data/controller_assist_db;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+---
+# ==============================================================
+# PERFIL 2: MYSQL (Para servidores Windows Server, Linux o cuando MySQL esté activo)
+# ==============================================================
+spring:
+  config:
+    activate:
+      on-profile: mysql
 
   datasource:
     url: ${DB_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:controller_assist_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
@@ -15,15 +55,3 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
-
-# Configuración de Documentación Swagger / OpenAPI
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: method

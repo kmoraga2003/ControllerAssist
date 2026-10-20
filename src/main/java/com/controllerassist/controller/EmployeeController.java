@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/employees")
-@Tag(name = "Empleados", description = "Endpoints para la administración del personal")
+@Tag(name = "Empleados / Usuarios", description = "Endpoints de administración de usuarios (GU-01, GU-02, GU-03, AP-01)")
 @CrossOrigin(origins = "*")
 public class EmployeeController {
 
@@ -26,13 +26,16 @@ public class EmployeeController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar empleados", description = "Retorna todos los empleados con opciones de filtrado por activos y búsqueda de texto.")
-    public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees(
-            @Parameter(description = "Filtrar únicamente empleados activos")
-            @RequestParam(required = false) Boolean activeOnly,
+    @Operation(
+            summary = "AP-01: Listar empleados por estado",
+            description = "Retorna un listado de empleados en formato JSON. Acepta parámetro de estado: ACTIVO, INACTIVO o TODOS."
+    )
+    public ResponseEntity<List<EmployeeResponseDTO>> getEmployees(
+            @Parameter(description = "Filtro de estado: ACTIVO, INACTIVO o TODOS")
+            @RequestParam(required = false, defaultValue = "TODOS") String status,
             @Parameter(description = "Búsqueda por nombre, código o departamento")
             @RequestParam(required = false) String search) {
-        return ResponseEntity.ok(employeeService.getAllEmployees(activeOnly, search));
+        return ResponseEntity.ok(employeeService.getEmployees(status, search));
     }
 
     @GetMapping("/{id}")
@@ -42,20 +45,20 @@ public class EmployeeController {
     }
 
     @GetMapping("/code/{code}")
-    @Operation(summary = "Obtener empleado por Código", description = "Busca un empleado por su código único (ej. EMP-001).")
+    @Operation(summary = "Obtener empleado por Código", description = "Busca un empleado por su código único (ej. EMP-101).")
     public ResponseEntity<EmployeeResponseDTO> getEmployeeByCode(@PathVariable String code) {
         return ResponseEntity.ok(employeeService.getEmployeeByCode(code));
     }
 
     @PostMapping
-    @Operation(summary = "Registrar nuevo empleado", description = "Crea un empleado en la base de datos MySQL validando código y email únicos.")
+    @Operation(summary = "GU-01: Crear usuario", description = "Crea un usuario/empleado con correo, contraseña y rol (ADMIN o EMPLEADO).")
     public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO dto) {
         EmployeeResponseDTO created = employeeService.createEmployee(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar datos de empleado", description = "Actualiza la información de un empleado existente.")
+    @Operation(summary = "GU-02: Modificar usuario", description = "Actualiza los datos del usuario en el sistema.")
     public ResponseEntity<EmployeeResponseDTO> updateEmployee(
             @PathVariable Long id,
             @Valid @RequestBody EmployeeRequestDTO dto) {
@@ -63,7 +66,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Desactivar empleado", description = "Realiza una baja lógica del empleado estableciendo active = false.")
+    @Operation(summary = "GU-03: Eliminar usuario", description = "Desactiva (baja lógica) al usuario conservando su historial de asistencias.")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();

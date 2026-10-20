@@ -17,6 +17,8 @@ public interface AttendanceRepository extends JpaRepository<AttendanceRecord, Lo
 
     Optional<AttendanceRecord> findByEmployeeAndAttendanceDate(Employee employee, LocalDate attendanceDate);
 
+    List<AttendanceRecord> findByAttendanceDate(LocalDate attendanceDate);
+
     List<AttendanceRecord> findByAttendanceDateOrderByCheckInTimeDesc(LocalDate attendanceDate);
 
     List<AttendanceRecord> findByAttendanceDateBetweenOrderByAttendanceDateDescCheckInTimeDesc(

@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/attendances")
-@Tag(name = "Asistencias", description = "Endpoints para registro y consulta de asistencias")
+@Tag(name = "Asistencias", description = "Endpoints para registro y consulta de asistencias (CA-01)")
 @CrossOrigin(origins = "*")
 public class AttendanceController {
 
@@ -32,8 +32,8 @@ public class AttendanceController {
 
     @PostMapping("/punch")
     @Operation(
-            summary = "Marcar Asistencia Rápida (Kiosco)",
-            description = "Detecta automáticamente si el empleado debe registrar Entrada o Salida según su estado de hoy. Ideal para lectores de código de barra o kiosco interactivo."
+            summary = "CA-01: Marcar Asistencia (Botón Entrada/Salida)",
+            description = "Registra Entrada o Salida para el empleado. Detecta automáticamente la acción requerida o acepta el tipo de marcación."
     )
     public ResponseEntity<AttendanceResponseDTO> punch(@Valid @RequestBody PunchRequestDTO request) {
         AttendanceResponseDTO response = attendanceService.punch(request);
@@ -54,6 +54,14 @@ public class AttendanceController {
         request.setType(PunchType.CHECK_OUT);
         AttendanceResponseDTO response = attendanceService.punch(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/my-today/{employeeId}")
+    @Operation(summary = "Obtener asistencia de hoy de un empleado", description = "Retorna el registro de asistencia del día para el empleado autenticado.")
+    public ResponseEntity<AttendanceResponseDTO> getMyTodayAttendance(@PathVariable Long employeeId) {
+        return attendanceService.getTodayAttendanceForEmployee(employeeId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
     }
 
     @GetMapping

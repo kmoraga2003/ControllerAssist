@@ -1,6 +1,7 @@
 package com.controllerassist.dto;
 
 import com.controllerassist.model.Employee;
+import com.controllerassist.model.Role;
 import java.time.LocalDateTime;
 
 public class EmployeeResponseDTO {
@@ -11,6 +12,7 @@ public class EmployeeResponseDTO {
     private String lastName;
     private String fullName;
     private String email;
+    private Role role;
     private String department;
     private String position;
     private boolean active;
@@ -27,6 +29,7 @@ public class EmployeeResponseDTO {
         dto.setLastName(employee.getLastName());
         dto.setFullName(employee.getFullName());
         dto.setEmail(employee.getEmail());
+        dto.setRole(employee.getRole());
         dto.setDepartment(employee.getDepartment());
         dto.setPosition(employee.getPosition());
         dto.setActive(employee.isActive());
@@ -80,6 +83,14 @@ public class EmployeeResponseDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getDepartment() {
