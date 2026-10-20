@@ -261,6 +261,30 @@ Se obtiene el archivo `target/controller-assist-0.0.1-SNAPSHOT.jar`.
 
 ---
 
+### 7.4. Opción Recomendada: Despliegue Automatizado con Docker Compose (Windows Server o Linux)
+
+Si el servidor tiene **Docker Engine / Docker Desktop** habilitado, este método es el más rápido, limpio y profesional, ya que levanta tanto la aplicación Spring Boot como el servidor MySQL 8.0 en un solo paso, con persistencia y conexión automática.
+
+1. **Requisitos**:
+   - Docker y Docker Compose instalados en el servidor.
+2. **Iniciar la Solución**:
+   Desde la carpeta raíz del proyecto, ejecutar en PowerShell o Terminal:
+   ```bash
+   docker compose up -d
+   ```
+3. **Verificar Estado de los Contenedores**:
+   ```bash
+   docker compose ps
+   docker compose logs -f app
+   ```
+4. **Beneficios de esta arquitectura**:
+   - No requiere instalar MySQL ni Java manualmente en el sistema operativo anfitrión.
+   - La base de datos se inicializa automáticamente con el script `database/init.sql`.
+   - Reinicio automático ante caídas (`restart: unless-stopped`).
+   - Expone la aplicación directamente en los puertos `80` (HTTP estándar) y `8080`.
+
+---
+
 ## 8. Verificación y Validación de la Solución
 
 1. **Acceso a la Interfaz Web**:

@@ -1,0 +1,53 @@
+version: '3.8'
+
+# ====================================================================
+# Docker Compose - ControllerAssist + MySQL 8.0
+# Despliegue en 1 solo comando para Windows Server o Linux:
+#   docker compose up -d
+# ====================================================================
+
+services:
+  # Servidor de Base de Datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: controller_assist_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: controller_assist_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # Aplicación Spring Boot (Web + REST API)
+  app:
+    build: .
+    container_name: controller_assist_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: controller_assist_db
+      DB_USER: root
+      DB_PASSWORD: root
+      PORT: 8080
+    ports:
+      # Mapea tanto el puerto 8080 como el puerto 80 estándar
+      - "8080:8080"
+      - "80:8080"
+
+volumes:
+  mysql_data:
+    driver: local
