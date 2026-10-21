@@ -44,9 +44,8 @@ services:
       DB_PASSWORD: root
       PORT: 8080
     ports:
-      # Mapea tanto el puerto 8080 como el puerto 80 estándar
+      # Puerto 8080 para la aplicación (el puerto 80 queda libre para IIS Reverse Proxy)
       - "8080:8080"
-      - "80:8080"
 
 volumes:
   mysql_data:
